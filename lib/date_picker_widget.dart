@@ -233,7 +233,7 @@ class DatePickerState extends State<DatePicker> {
                         onPressed:
                             isCanPreviousMonth ? _setPreviousMonth : null,
                         icon: widget.previousIconBuilder != null
-                            ? widget.previousIconBuilder!(isCanNextMonth)
+                            ? widget.previousIconBuilder!(isCanPreviousMonth)
                             : const Icon(Icons.arrow_back_ios)),
                     Text(_currentMonthValue,
                         style: widget.monthHeaderTextStyle ??
