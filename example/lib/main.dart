@@ -10,11 +10,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
+    return const MaterialApp(
+      home: MyHomePage(),
     );
   }
 }
@@ -39,53 +36,47 @@ class MyHomePageState extends State<MyHomePage> {
             _controller.animateToSelection();
           },
         ),
-        body: Container(
-          padding: const EdgeInsets.all(20.0),
-          color: Colors.blueGrey[100],
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text("You Selected:"),
-              const Padding(padding: EdgeInsets.all(10)),
-              Text(_selectedValue.toString()),
-              const Padding(padding: EdgeInsets.all(20)),
-              DatePicker(
-                DateTime.now(),
-                width: 44,
-                height: 72,
-                controller: _controller,
-                initialSelectedDate: DateTime.now(),
-                selectionColor: Colors.black,
-                selectedTextColor: Colors.white,
-                dateTextStyle: const TextStyle(fontSize: 14),
-                dayTextStyle: const TextStyle(fontSize: 14),
-                inactiveDates: [
-                  DateTime.now().add(const Duration(days: 3)),
-                  DateTime.now().add(const Duration(days: 4)),
-                  DateTime.now().add(const Duration(days: 7))
-                ],
-                onDateWidgetBuilder: _onDayWidgetBuilder,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                deactivateDecoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                selectedDecoration: BoxDecoration(
-                  border: Border.all(color: Colors.green),
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                onDateChange: (date) {
-                  setState(() {
-                    _selectedValue = date;
-                  });
-                },
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DatePicker(
+              DateTime(2023, 2, 15),
+              width: 44,
+              height: 72,
+              controller: _controller,
+              selectionColor: Colors.black,
+              selectedTextColor: Colors.white,
+              maxDateTime: DateTime(2023, 8, 1),
+              isMonthManager: true,
+              dateTextStyle: const TextStyle(fontSize: 14),
+              dayTextStyle: const TextStyle(fontSize: 14),
+              inactiveDates: [
+                DateTime(2023, 2, 15).add(const Duration(days: 3)),
+                DateTime(2023, 2, 15).add(const Duration(days: 4)),
+                DateTime(2023, 2, 15).add(const Duration(days: 7))
+              ],
+              onDateWidgetBuilder: _onDayWidgetBuilder,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-          ),
+              deactivateDecoration: BoxDecoration(
+                border: Border.all(color: Colors.blue),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              selectedDecoration: BoxDecoration(
+                border: Border.all(color: Colors.green),
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              itemSpacing: 1.5,
+              onDateChange: (date) {
+                setState(() {
+                  _selectedValue = date;
+                });
+              },
+            ),
+          ],
         ));
   }
 
@@ -102,7 +93,7 @@ class MyHomePageState extends State<MyHomePage> {
   ) {
     return InkWell(
       child: Container(
-        constraints: width != null ? BoxConstraints(minWidth: width) : null,
+        width: width,
         margin: const EdgeInsets.all(3.0),
         decoration: decoration ??
             BoxDecoration(
@@ -118,7 +109,8 @@ class MyHomePageState extends State<MyHomePage> {
               Text(
                   DateFormat(DateFormat.ABBR_WEEKDAY, locale)
                       .format(date)
-                      .toUpperCase(), // WeekDay
+                      .toUpperCase(),
+                  maxLines: 1, // WeekDay
                   style: dayTextStyle),
               Text(date.day.toString(), // Date
                   style: dateTextStyle),
