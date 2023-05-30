@@ -46,15 +46,15 @@ class DatePicker extends StatefulWidget {
 
   final bool isMonthManager;
 
-  final Widget? previousIcon;
-
-  final Widget? nextIcon;
-
   final TextStyle? monthHeaderTextStyle;
 
   final DateTime maxDateTime;
 
   final num itemSpacing;
+
+  final Function(bool)? previousIconBuilder;
+
+  final Function(bool)? nextIconBuilder;
 
   final Widget Function(
     double? width,
@@ -92,9 +92,9 @@ class DatePicker extends StatefulWidget {
     this.dateWidget,
     this.onDateWidgetBuilder,
     this.isMonthManager = false,
-    this.previousIcon,
-    this.nextIcon,
     this.monthHeaderTextStyle,
+    this.nextIconBuilder,
+    this.previousIconBuilder,
   }) : assert(
             activeDates == null || inactiveDates == null,
             "Can't "
@@ -232,15 +232,17 @@ class DatePickerState extends State<DatePicker> {
                     IconButton(
                         onPressed:
                             isCanPreviousMonth ? _setPreviousMonth : null,
-                        icon: widget.previousIcon ??
-                            const Icon(Icons.arrow_back_ios)),
+                        icon: widget.previousIconBuilder != null
+                            ? widget.previousIconBuilder!(isCanNextMonth)
+                            : const Icon(Icons.arrow_back_ios)),
                     Text(_currentMonthValue,
                         style: widget.monthHeaderTextStyle ??
                             const TextStyle(color: Colors.black, fontSize: 18)),
                     IconButton(
                         onPressed: isCanNextMonth ? _setNextMonth : null,
-                        icon: widget.nextIcon ??
-                            const Icon(Icons.arrow_forward_ios)),
+                        icon: widget.nextIconBuilder != null
+                            ? widget.nextIconBuilder!(isCanNextMonth)
+                            : const Icon(Icons.arrow_forward_ios)),
                   ],
                 ),
               )
