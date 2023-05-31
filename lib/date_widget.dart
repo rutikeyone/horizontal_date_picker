@@ -9,6 +9,8 @@ class DateWidget extends StatelessWidget {
   final Color selectionColor;
   final DateSelectionCallback? onDateSelected;
   final String? locale;
+  final bool isDeactivated;
+
   final Widget Function(
     double? width,
     DateTime date,
@@ -19,6 +21,7 @@ class DateWidget extends StatelessWidget {
     DateSelectionCallback? onDateSelected,
     String? locale,
     BoxDecoration? decoration,
+    bool isDeactivated,
   )? onDateWidgetBuilder;
   final BoxDecoration? decoration;
 
@@ -29,6 +32,7 @@ class DateWidget extends StatelessWidget {
     required this.dayTextStyle,
     required this.dateTextStyle,
     required this.selectionColor,
+    required this.isDeactivated,
     this.width,
     this.onDateSelected,
     this.locale,
@@ -39,8 +43,17 @@ class DateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return onDateWidgetBuilder != null
-        ? onDateWidgetBuilder!(width, date, monthTextStyle, dayTextStyle,
-            dateTextStyle, selectionColor, onDateSelected, locale, decoration)
+        ? onDateWidgetBuilder!(
+            width,
+            date,
+            monthTextStyle,
+            dayTextStyle,
+            dateTextStyle,
+            selectionColor,
+            onDateSelected,
+            locale,
+            decoration,
+            isDeactivated)
         : InkWell(
             child: Container(
               width: width,

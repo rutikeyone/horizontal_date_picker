@@ -68,6 +68,7 @@ class DatePicker extends StatefulWidget {
     DateSelectionCallback? onDateSelected,
     String? locale,
     BoxDecoration? decoration,
+    bool isDeactivated,
   )? onDateWidgetBuilder;
 
   const DatePicker(
@@ -286,6 +287,7 @@ class DatePickerState extends State<DatePicker> {
                   : false;
 
               return DateWidget(
+                isDeactivated: isDeactivated,
                 decoration: isDeactivated
                     ? widget.deactivateDecoration
                     : isSelected

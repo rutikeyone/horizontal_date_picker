@@ -90,8 +90,16 @@ class MyHomePageState extends State<MyHomePage> {
     DateSelectionCallback? onDateSelected,
     String? locale,
     BoxDecoration? decoration,
+    bool isDeactivated,
   ) {
     return InkWell(
+      onTap: isDeactivated
+          ? null
+          : () {
+              if (onDateSelected != null) {
+                onDateSelected!(date);
+              }
+            },
       child: Container(
         width: width,
         margin: const EdgeInsets.all(3.0),
@@ -118,13 +126,6 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      onTap: () {
-        // Check if onDateSelected is not null
-        if (onDateSelected != null) {
-          // Call the onDateSelected Function
-          onDateSelected!(date);
-        }
-      },
     );
   }
 }
