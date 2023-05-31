@@ -40,7 +40,7 @@ class MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             DatePicker(
-              DateTime(2023, 2, 15),
+              DateTime(2023, 2, 13),
               width: 44,
               height: 72,
               controller: _controller,

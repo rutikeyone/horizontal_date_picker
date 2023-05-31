@@ -14,6 +14,8 @@ class DatePicker extends StatefulWidget {
 
   final DateTime startDate;
 
+  final DateTime? initialSelectedDate;
+
   final DatePickerController controller;
 
   final Color selectedTextColor;
@@ -95,6 +97,7 @@ class DatePicker extends StatefulWidget {
     this.monthHeaderTextStyle,
     this.nextIconBuilder,
     this.previousIconBuilder,
+    this.initialSelectedDate,
   }) : assert(
             activeDates == null || inactiveDates == null,
             "Can't "
@@ -105,13 +108,13 @@ class DatePicker extends StatefulWidget {
 }
 
 class DatePickerState extends State<DatePicker> {
-  late DateTime _currentDate;
+  late DateTime? _currentDate;
 
   final ScrollController _controller = ScrollController();
 
   late final _monthDateFormat = DateFormat("MMMM", widget.locale);
 
-  late DateTime _currentMonth = widget.startDate;
+  late DateTime _currentMonth = widget.initialSelectedDate ?? widget.startDate;
 
   late final TextStyle selectedDateStyle;
   late final TextStyle selectedMonthStyle;
@@ -130,13 +133,13 @@ class DatePickerState extends State<DatePicker> {
   bool get isCanNextMonth =>
       widget.maxDateTime
               .difference(
-                  DateTime(_currentDate.year, _currentMonth.month + 1, 1))
+                  DateTime(widget.startDate.year, _currentMonth.month + 1, 1))
               .inDays >=
           0 &&
       isListenChangeMonth;
 
   bool get isCanPreviousMonth =>
-      DateTime(_currentDate.year, _currentMonth.month, 1)
+      DateTime(widget.startDate.year, _currentMonth.month, 1)
               .difference(widget.startDate)
               .inDays >=
           1 &&
@@ -152,7 +155,7 @@ class DatePickerState extends State<DatePicker> {
   @override
   void initState() {
     initializeDateFormatting(widget.locale);
-    _currentDate = widget.startDate;
+    _currentDate = widget.initialSelectedDate;
     widget.controller.setDatePickerState(this);
     selectedDateStyle =
         widget.dateTextStyle.copyWith(color: widget.selectedTextColor);
@@ -179,7 +182,7 @@ class DatePickerState extends State<DatePicker> {
 
   void _setNextMonth() {
     final nextMonthDateTime =
-        DateTime(_currentDate.year, _currentMonth.month + 1, 1);
+        DateTime(widget.startDate.year, _currentMonth.month + 1, 1);
     setState(() {
       if (nextMonthDateTime.compareTo(widget.maxDateTime) >= -1) {
         isListenChangeMonth = false;
@@ -196,7 +199,7 @@ class DatePickerState extends State<DatePicker> {
 
   void _setPreviousMonth() {
     final previousMonthDateTime =
-        DateTime(_currentDate.year, _currentMonth.month - 1, 1);
+        DateTime(widget.startDate.year, _currentMonth.month - 1, 1);
     setState(() {
       if (previousMonthDateTime.compareTo(widget.maxDateTime) < 1) {
         isListenChangeMonth = false;
@@ -278,7 +281,9 @@ class DatePickerState extends State<DatePicker> {
                 }
               }
 
-              bool isSelected = _compareDate(date, _currentDate);
+              bool isSelected = _currentDate != null
+                  ? _compareDate(date, _currentDate!)
+                  : false;
 
               return DateWidget(
                 decoration: isDeactivated
