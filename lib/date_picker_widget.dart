@@ -58,6 +58,8 @@ class DatePicker extends StatefulWidget {
 
   final Function(bool)? nextIconBuilder;
 
+  final Widget Function(DateTime, String, DateTime?)? monthBuilder;
+
   final Widget Function(
     double? width,
     DateTime date,
@@ -99,6 +101,7 @@ class DatePicker extends StatefulWidget {
     this.nextIconBuilder,
     this.previousIconBuilder,
     this.initialSelectedDate,
+    this.monthBuilder,
   }) : assert(
             activeDates == null || inactiveDates == null,
             "Can't "
@@ -239,9 +242,15 @@ class DatePickerState extends State<DatePicker> {
                         icon: widget.previousIconBuilder != null
                             ? widget.previousIconBuilder!(isCanPreviousMonth)
                             : const Icon(Icons.arrow_back_ios)),
-                    Text(_currentMonthValue,
-                        style: widget.monthHeaderTextStyle ??
-                            const TextStyle(color: Colors.black, fontSize: 18)),
+                    widget.monthBuilder == null
+                        ? Text(
+                            _currentMonthValue,
+                            style: widget.monthHeaderTextStyle ??
+                                const TextStyle(
+                                    color: Colors.black, fontSize: 18),
+                          )
+                        : widget.monthBuilder!(_currentMonth,
+                            _currentMonthValue, widget.initialSelectedDate),
                     IconButton(
                         onPressed: isCanNextMonth ? _setNextMonth : null,
                         icon: widget.nextIconBuilder != null

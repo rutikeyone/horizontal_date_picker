@@ -43,6 +43,7 @@ class MyHomePageState extends State<MyHomePage> {
               DateTime(2023, 2, 13),
               width: 44,
               height: 72,
+              monthBuilder: _monthBuilder,
               controller: _controller,
               selectionColor: Colors.black,
               selectedTextColor: Colors.white,
@@ -126,6 +127,14 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _monthBuilder(
+      DateTime date, String monthValue, DateTime? initialSelectedDate) {
+    return Text(
+      _selectedValue.toString(),
+      style: const TextStyle(color: Colors.red, fontSize: 18),
     );
   }
 }
