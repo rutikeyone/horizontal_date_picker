@@ -49,6 +49,7 @@ class MyHomePageState extends State<MyHomePage> {
               selectedTextColor: Colors.white,
               maxDateTime: DateTime(2023, 8, 1),
               isMonthManager: true,
+              showPrevAndNextButton: false,
               dateTextStyle: const TextStyle(fontSize: 14),
               dayTextStyle: const TextStyle(fontSize: 14),
               inactiveDates: [
@@ -115,10 +116,7 @@ class MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                  DateFormat(DateFormat.ABBR_WEEKDAY, locale)
-                      .format(date)
-                      .toUpperCase(),
+              Text(DateFormat(DateFormat.ABBR_WEEKDAY, locale).format(date).toUpperCase(),
                   maxLines: 1, // WeekDay
                   style: dayTextStyle),
               Text(date.day.toString(), // Date
@@ -130,8 +128,7 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _monthBuilder(
-      DateTime date, String monthValue, DateTime? initialSelectedDate) {
+  Widget _monthBuilder(DateTime date, String monthValue, DateTime? initialSelectedDate) {
     return Text(
       _selectedValue.toString(),
       style: const TextStyle(color: Colors.red, fontSize: 18),

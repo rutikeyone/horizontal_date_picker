@@ -60,6 +60,8 @@ class DatePicker extends StatefulWidget {
 
   final Widget Function(DateTime, String, DateTime?)? monthBuilder;
 
+  final bool showPrevAndNextButton;
+
   final Widget Function(
     double? width,
     DateTime date,
@@ -87,6 +89,7 @@ class DatePicker extends StatefulWidget {
     this.selectedTextColor = Colors.white,
     this.selectionColor = AppColors.defaultSelectionColor,
     this.deactivatedColor = AppColors.defaultDeactivatedColor,
+    this.showPrevAndNextButton = true,
     this.activeDates,
     this.inactiveDates,
     this.onDateChange,
@@ -136,22 +139,19 @@ class DatePickerState extends State<DatePicker> {
 
   bool get isCanNextMonth =>
       widget.maxDateTime
-              .difference(
-                  DateTime(widget.startDate.year, _currentMonth.month + 1, 1))
+              .difference(DateTime(widget.startDate.year, _currentMonth.month + 1, 1))
               .inDays >=
           0 &&
       isListenChangeMonth;
 
   bool get isCanPreviousMonth =>
-      DateTime(widget.startDate.year, _currentMonth.month, 1)
-              .difference(widget.startDate)
-              .inDays >=
+      DateTime(widget.startDate.year, _currentMonth.month, 1).difference(widget.startDate).inDays >=
           1 &&
       isListenChangeMonth;
 
   List<DateTime> get dates {
-    final generatedDates = List.generate(
-        daysCount, (index) => widget.startDate.add(Duration(days: index)));
+    final generatedDates =
+        List.generate(daysCount, (index) => widget.startDate.add(Duration(days: index)));
     final nextDay = generatedDates.last.add(const Duration(days: 1));
     return generatedDates..add(nextDay);
   }
@@ -161,19 +161,13 @@ class DatePickerState extends State<DatePicker> {
     initializeDateFormatting(widget.locale);
     _currentDate = widget.initialSelectedDate;
     widget.controller.setDatePickerState(this);
-    selectedDateStyle =
-        widget.dateTextStyle.copyWith(color: widget.selectedTextColor);
-    selectedMonthStyle =
-        widget.monthTextStyle.copyWith(color: widget.selectedTextColor);
-    selectedDayStyle =
-        widget.dayTextStyle.copyWith(color: widget.selectedTextColor);
+    selectedDateStyle = widget.dateTextStyle.copyWith(color: widget.selectedTextColor);
+    selectedMonthStyle = widget.monthTextStyle.copyWith(color: widget.selectedTextColor);
+    selectedDayStyle = widget.dayTextStyle.copyWith(color: widget.selectedTextColor);
 
-    deactivatedDateStyle =
-        widget.dateTextStyle.copyWith(color: widget.deactivatedColor);
-    deactivatedMonthStyle =
-        widget.monthTextStyle.copyWith(color: widget.deactivatedColor);
-    deactivatedDayStyle =
-        widget.dayTextStyle.copyWith(color: widget.deactivatedColor);
+    deactivatedDateStyle = widget.dateTextStyle.copyWith(color: widget.deactivatedColor);
+    deactivatedMonthStyle = widget.monthTextStyle.copyWith(color: widget.deactivatedColor);
+    deactivatedDayStyle = widget.dayTextStyle.copyWith(color: widget.deactivatedColor);
     _controller.addListener(_scrollListener);
     super.initState();
   }
@@ -185,8 +179,7 @@ class DatePickerState extends State<DatePicker> {
   }
 
   void _setNextMonth() {
-    final nextMonthDateTime =
-        DateTime(widget.startDate.year, _currentMonth.month + 1, 1);
+    final nextMonthDateTime = DateTime(widget.startDate.year, _currentMonth.month + 1, 1);
     setState(() {
       if (nextMonthDateTime.compareTo(widget.maxDateTime) >= -1) {
         isListenChangeMonth = false;
@@ -202,8 +195,7 @@ class DatePickerState extends State<DatePicker> {
   }
 
   void _setPreviousMonth() {
-    final previousMonthDateTime =
-        DateTime(widget.startDate.year, _currentMonth.month - 1, 1);
+    final previousMonthDateTime = DateTime(widget.startDate.year, _currentMonth.month - 1, 1);
     setState(() {
       if (previousMonthDateTime.compareTo(widget.maxDateTime) < 1) {
         isListenChangeMonth = false;
@@ -236,26 +228,28 @@ class DatePickerState extends State<DatePicker> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                        onPressed:
-                            isCanPreviousMonth ? _setPreviousMonth : null,
-                        icon: widget.previousIconBuilder != null
-                            ? widget.previousIconBuilder!(isCanPreviousMonth)
-                            : const Icon(Icons.arrow_back_ios)),
+                    widget.showPrevAndNextButton
+                        ? IconButton(
+                            onPressed: isCanPreviousMonth ? _setPreviousMonth : null,
+                            icon: widget.previousIconBuilder != null
+                                ? widget.previousIconBuilder!(isCanPreviousMonth)
+                                : const Icon(Icons.arrow_back_ios))
+                        : const SizedBox.shrink(),
                     widget.monthBuilder == null
                         ? Text(
                             _currentMonthValue,
                             style: widget.monthHeaderTextStyle ??
-                                const TextStyle(
-                                    color: Colors.black, fontSize: 18),
+                                const TextStyle(color: Colors.black, fontSize: 18),
                           )
-                        : widget.monthBuilder!(_currentMonth,
-                            _currentMonthValue, widget.initialSelectedDate),
-                    IconButton(
-                        onPressed: isCanNextMonth ? _setNextMonth : null,
-                        icon: widget.nextIconBuilder != null
-                            ? widget.nextIconBuilder!(isCanNextMonth)
-                            : const Icon(Icons.arrow_forward_ios)),
+                        : widget.monthBuilder!(
+                            _currentMonth, _currentMonthValue, widget.initialSelectedDate),
+                    widget.showPrevAndNextButton
+                        ? IconButton(
+                            onPressed: isCanNextMonth ? _setNextMonth : null,
+                            icon: widget.nextIconBuilder != null
+                                ? widget.nextIconBuilder!(isCanNextMonth)
+                                : const Icon(Icons.arrow_forward_ios))
+                        : const SizedBox.shrink(),
                   ],
                 ),
               )
@@ -268,8 +262,7 @@ class DatePickerState extends State<DatePicker> {
             controller: _controller,
             itemBuilder: (context, index) {
               DateTime date;
-              date = DateTime(
-                  dates[index].year, dates[index].month, dates[index].day);
+              date = DateTime(dates[index].year, dates[index].month, dates[index].day);
               bool isDeactivated = false;
 
               if (widget.inactiveDates != null) {
@@ -291,9 +284,7 @@ class DatePickerState extends State<DatePicker> {
                 }
               }
 
-              bool isSelected = _currentDate != null
-                  ? _compareDate(date, _currentDate!)
-                  : false;
+              bool isSelected = _currentDate != null ? _compareDate(date, _currentDate!) : false;
 
               return DateWidget(
                 isDeactivated: isDeactivated,
@@ -321,8 +312,7 @@ class DatePickerState extends State<DatePicker> {
                         : widget.dayTextStyle,
                 width: widget.width,
                 locale: widget.locale,
-                selectionColor:
-                    isSelected ? widget.selectionColor : Colors.transparent,
+                selectionColor: isSelected ? widget.selectionColor : Colors.transparent,
                 onDateSelected: (selectedDate) {
                   if (isDeactivated) return;
                   if (widget.onDateChange != null) {
@@ -342,19 +332,14 @@ class DatePickerState extends State<DatePicker> {
   }
 
   bool _compareDate(DateTime date1, DateTime date2) {
-    return date1.day == date2.day &&
-        date1.month == date2.month &&
-        date1.year == date2.year;
+    return date1.day == date2.day && date1.month == date2.month && date1.year == date2.year;
   }
 
   void _scrollListener() {
     double currentPosition = _controller.position.pixels;
     int currentIndex = _controller.position.maxScrollExtent == currentPosition
         ? daysCount - 1
-        : (_controller.offset /
-                _controller.position.maxScrollExtent *
-                daysCount)
-            .floor();
+        : (_controller.offset / _controller.position.maxScrollExtent * daysCount).floor();
     if (isListenChangeMonth) _updateMonth(dates[currentIndex]);
   }
 }
@@ -367,23 +352,19 @@ class DatePickerController {
   }
 
   void jumpToSelection() {
-    assert(_datePickerState != null,
-        'DatePickerController is not attached to any DatePicker View.');
+    assert(
+        _datePickerState != null, 'DatePickerController is not attached to any DatePicker View.');
 
-    _datePickerState!._controller
-        .jumpTo(_calculateDateOffset(_datePickerState!._currentDate!));
+    _datePickerState!._controller.jumpTo(_calculateDateOffset(_datePickerState!._currentDate!));
   }
 
-  void animateToSelection(
-      {duration = const Duration(milliseconds: 500), curve = Curves.linear}) {
-    assert(_datePickerState != null,
-        'DatePickerController is not attached to any DatePicker View.');
+  void animateToSelection({duration = const Duration(milliseconds: 500), curve = Curves.linear}) {
+    assert(
+        _datePickerState != null, 'DatePickerController is not attached to any DatePicker View.');
 
     // animate to the current date
-    _datePickerState!._controller.animateTo(
-        _calculateDateOffset(_datePickerState!._currentDate!),
-        duration: duration,
-        curve: curve);
+    _datePickerState!._controller.animateTo(_calculateDateOffset(_datePickerState!._currentDate!),
+        duration: duration, curve: curve);
   }
 
   void animateToDate(
@@ -392,8 +373,8 @@ class DatePickerController {
     curve = Curves.linear,
     VoidCallback? onFinishCallback,
   }) {
-    assert(_datePickerState != null,
-        'DatePickerController is not attached to any DatePicker View.');
+    assert(
+        _datePickerState != null, 'DatePickerController is not attached to any DatePicker View.');
 
     _datePickerState!._controller
         .animateTo(_calculateDateOffset(date), duration: duration, curve: curve)
@@ -408,11 +389,11 @@ class DatePickerController {
 
   void setDateAndAnimate(DateTime date,
       {duration = const Duration(milliseconds: 500), curve = Curves.linear}) {
-    assert(_datePickerState != null,
-        'DatePickerController is not attached to any DatePicker View.');
+    assert(
+        _datePickerState != null, 'DatePickerController is not attached to any DatePicker View.');
 
-    _datePickerState!._controller.animateTo(_calculateDateOffset(date),
-        duration: duration, curve: curve);
+    _datePickerState!._controller
+        .animateTo(_calculateDateOffset(date), duration: duration, curve: curve);
 
     if (date.compareTo(_datePickerState!.widget.startDate) >= 0 &&
         date.compareTo(_datePickerState!.widget.startDate
@@ -423,10 +404,8 @@ class DatePickerController {
   }
 
   double _calculateDateOffset(DateTime date) {
-    final startDate = DateTime(
-        _datePickerState!.widget.startDate.year,
-        _datePickerState!.widget.startDate.month,
-        _datePickerState!.widget.startDate.day);
+    final startDate = DateTime(_datePickerState!.widget.startDate.year,
+        _datePickerState!.widget.startDate.month, _datePickerState!.widget.startDate.day);
 
     int offset = date.difference(startDate).inDays;
     return (offset * _datePickerState!.widget.width) +
